@@ -1,8 +1,9 @@
--- Database: test
+```sql
+-- Database: Movie_data
 
--- DROP DATABASE test;
+-- DROP DATABASE "Movie_data";
 
-CREATE DATABASE test
+CREATE DATABASE "Movie_data"
     WITH 
     OWNER = postgres
     ENCODING = 'UTF8'
@@ -12,30 +13,113 @@ CREATE DATABASE test
     CONNECTION LIMIT = -1;
 	
 	
-	-- modify a table and add column
 	
-	CREATE TABLE examples (
 	
-		examples_id SERIAL PRIMARY KEY,
+	
+	-- create the directors table
+	
+	CREATE TABLE directors (
+	
+		director_id SERIAL PRIMARY KEY,
 		first_name VARCHAR (30),
-		last_name VARCHAR (30)
+		last_name VARCHAR (30) NOT NULL,
+		date_of_birth DATE,
+		nationality VARCHAR (20)
 	);
 	
-SELECT * FROM examples;
+	SELECT * FROM directors;
+	
+	-- create the actors table
+	
+	CREATE TABLE actors (
+	
+		actor_id SERIAL PRIMARY KEY,
+		first_name VARCHAR (30),
+		last_name VARCHAR (30),
+		gender CHAR (1),
+		date_of_birth DATE
+	);
+	
+	SELECT * FROM actors;
+	
+	--create the movie table (with a foreign key)
+	
+	CREATE TABLE movies (
+	
+		movie_id SERIAL PRIMARY KEY,
+		movie_name VARCHAR (50) NOT NULL,
+		movie_length INT,
+		movie_language VARCHAR (20),
+		release_date DATE,
+		age_certificate VARCHAR (5),
+		director_id INT REFERENCES directors (director_id)
+	);
+	
+	
+	SELECT * FROM movies;
 
-ALTER TABLE examples
-ADD COLUMN email VARCHAR (50) UNIQUE;
+CREATE TABLE movie_revenues (
+	
+		revenue_id SERIAL PRIMARY KEY,
+		movie_id INT REFERENCES movies (movie_id),
+		domestic_takings NUMERIC (6,2),
+		international_takings NUMERIC (6,2)
+	);
+	
+	SELECT * FROM movie_revenues;
 
-ALTER TABLE examples
-ADD COLUMN nationality VARCHAR (30);
+--query
 
-ALTER TABLE examples
-ADD COLUMN age INT NOT NULL ;
+SELECT * FROM directors;
 
+SELECT first_name FROM directors;
 
-ALTER TABLE examples
-ALTER COLUMN nationality TYPE CHAR(3);
+SELECT first_name, last_name FROM directors;
 
-ALTER TABLE examples
-ALTER COLUMN last_name TYPE VARCHAR (50),
-ALTER COLUMN email TYPE VARCHAR (80);
+SELECT first_name, last_name, nationality FROM directors;
+
+SELECT movie_name, movie_length FROM movies
+WHERE movie_length > 120;
+
+SELECT movie_name, release_date FROM movies;
+
+SELECT first_name, last_name FROM directors
+WHERE nationality = 'American';
+
+SELECT gender FROM actors
+WHERE gender = 'M';
+
+SELECT date_of_birth FROM actors
+WHERE date_of_birth > '1-1-1970';
+
+SELECT movie_name FROM movies
+WHERE movie_length > 90
+AND movie_language = 'English';
+
+-- Using IN and NOT IN 
+
+/*
+
+SELECT columnname1, columnname2 FROM tablename
+WHERE columnname 3 IN ('value1','value2');
+
+SELECT columnname1, columnname2 FROM tablename
+WHERE columnname 3 NOT IN ('value1','value2');
+
+*/
+
+SELECT first_name, last_name FROM actors
+WHERE first_name IN ('Bruce','John');
+
+SELECT first_name, last_name FROM actors
+WHERE first_name IN ('Bruce','John','Peter');
+
+SELECT first_name, last_name FROM actors
+WHERE first_name NOT IN ('Bruce','John','Peter');
+
+SELECT actor_id, first_name, last_name FROM actors
+WHERE actor_id IN (2,3,4,5,6,8);
+
+SELECT actor_id, first_name, last_name FROM actors
+WHERE actor_id NOT IN (2,3,4,5,6,8);
+```
